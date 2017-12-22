@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"apiServer/apis"
 	"apiServer/entities"
 	"net/http"
 	"time"
@@ -68,6 +69,8 @@ func (h *Handlers) BookResource(c echo.Context) error {
 	}
 
 	tx.Commit()
+
+	go apis.NotifyResourceBooked(resource.ID)
 	return c.JSON(http.StatusOK, mapStruct(resource))
 }
 
@@ -79,6 +82,8 @@ func (h *Handlers) RestoreAllResources(c echo.Context) error {
 		return err
 	}
 	tx.Commit()
+
+	go apis.NotifyAllResourcesRestored()
 	return c.JSON(http.StatusOK, map[string]bool{
 		"success": true,
 	})

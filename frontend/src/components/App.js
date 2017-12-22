@@ -54,10 +54,12 @@ export default class App extends PureComponent {
   }
 
   wsListen(socket) {
-    socket.on("resource_booked", resourceId =>
-      this.setResourceAsBooked(resourceId)
-    );
-    socket.on("restore_all_resources", () => this.restoreAllResource());
+    socket.on("resource_booked", resourceId => {
+      this.setResourceAsBooked(parseInt(resourceId, 10));
+    });
+    socket.on("all_resources_restored", () => {
+      this.restoreAllResource();
+    });
   }
 
   async onSelect(resource) {

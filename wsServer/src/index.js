@@ -27,17 +27,13 @@ app.post("/resources/:id/book", function(req, res) {
     success: true
   });
 });
+
 app.post("/resources/restore", function(req, res) {
-  io.sockets.emit("restore_all_resources", true);
+  io.sockets.emit("all_resources_restored", true);
   res.json({
     success: true
   });
 });
-
-// Send ws message
-setInterval(function() {
-  io.sockets.emit("hello", "world");
-}, 2000);
 
 const port = process.env.HTTP_PORT || 4000;
 server.listen(port, function() {
