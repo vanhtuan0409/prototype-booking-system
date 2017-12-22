@@ -1,5 +1,6 @@
 import React, { PureComponent } from "react";
 import autobind from "class-autobind";
+import io from "socket.io-client";
 import toastr from "toastr";
 import Resource from "./Resource";
 import resourcesApi from "../apis/resources";
@@ -11,7 +12,7 @@ const styles = {
   flexWrap: "wrap"
 };
 
-export default class componentName extends PureComponent {
+export default class App extends PureComponent {
   constructor(props) {
     super(props);
     autobind(this);
@@ -24,9 +25,21 @@ export default class componentName extends PureComponent {
     try {
       const resources = await resourcesApi.getAll();
       this.setState({ resources });
+
+      const socket = io(process.env.REACT_APP_SOCKET_URL, {
+        path: "/subscribe"
+      });
+      this.wsListen(socket);
     } catch (error) {
+      console.log(error);
       toastr(error);
     }
+  }
+
+  wsListen(socket) {
+    socket.on("hello", function(data) {
+      console.log(data);
+    });
   }
 
   async onSelect(resource) {
@@ -44,6 +57,7 @@ export default class componentName extends PureComponent {
       });
       this.setState({ resources: newResources });
     } catch (error) {
+      console.log(error);
       toastr(error);
     }
   }
@@ -56,6 +70,7 @@ export default class componentName extends PureComponent {
       );
       this.setState({ resources: newResources });
     } catch (error) {
+      console.log(error);
       toastr(error);
     }
   }

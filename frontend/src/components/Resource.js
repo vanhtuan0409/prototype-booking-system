@@ -21,7 +21,7 @@ const unavailableStyles = {
   color: "#fff"
 };
 
-export default class componentName extends PureComponent {
+export default class Resource extends PureComponent {
   render() {
     const { resource, onSelect } = this.props;
     const style = resource.available

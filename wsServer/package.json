@@ -5,8 +5,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint src/**",
-    "dev":
-      "NODE_ENV=development nodemon -w src --exec \"node -r dotenv/config -r babel-register src\"",
+    "dev": "NODE_ENV=development nodemon -w src --exec \"node -r dotenv/config -r babel-register src\"",
     "prebuild": "npm run lint",
     "build": "babel src -s -D -d dist",
     "start": "NODE_ENV=production node -r dotenv/config dist"
@@ -26,8 +25,12 @@
     "prettier": "^1.5.2"
   },
   "dependencies": {
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
     "dotenv": "^4.0.0",
     "express": "^4.15.3",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "morgan": "^1.9.0",
+    "socket.io": "^2.0.4"
   }
 }
