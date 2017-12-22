@@ -1,0 +1,17 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./containers/postgresql:/var/lib/postgresql
+    environment:
+      - POSTGRES_USER=booking
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 5432:5432
+  
+  adminer:
+    image: adminer
+    ports:
+      - 5656:8080
