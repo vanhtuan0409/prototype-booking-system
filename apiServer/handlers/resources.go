@@ -10,7 +10,7 @@ import (
 )
 
 type TransportResource struct {
-	Id        uint      `json:"id"`
+	ID        uint      `json:"id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Available bool      `json:"available"`
@@ -18,7 +18,7 @@ type TransportResource struct {
 
 func mapStruct(r *entities.Resource) *TransportResource {
 	return &TransportResource{
-		Id:        r.ID,
+		ID:        r.ID,
 		CreatedAt: r.CreatedAt,
 		UpdatedAt: r.UpdatedAt,
 		Available: r.Availability,
