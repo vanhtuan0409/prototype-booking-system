@@ -22,18 +22,13 @@ export default class App extends PureComponent {
   }
 
   async componentDidMount() {
-    try {
-      const resources = await resourcesApi.getAll();
-      this.setState({ resources });
+    const resources = await resourcesApi.getAll();
+    this.setState({ resources });
 
-      const socket = io(process.env.REACT_APP_SOCKET_URL, {
-        path: "/subscribe"
-      });
-      this.wsListen(socket);
-    } catch (error) {
-      console.log(error);
-      toastr(error);
-    }
+    const socket = io(process.env.REACT_APP_SOCKET_URL, {
+      path: "/subscribe"
+    });
+    this.wsListen(socket);
   }
 
   setResourceAsBooked(resourceId) {
@@ -67,23 +62,13 @@ export default class App extends PureComponent {
       toastr.error("Cannot select a booked resource");
       return;
     }
-    try {
-      await resourcesApi.book(resource.id);
-      this.setResourceAsBooked(resource.id);
-    } catch (error) {
-      console.log(error);
-      toastr(error);
-    }
+    await resourcesApi.book(resource.id);
+    this.setResourceAsBooked(resource.id);
   }
 
   async onRestore() {
-    try {
-      await resourcesApi.resetAll();
-      this.restoreAllResource();
-    } catch (error) {
-      console.log(error);
-      toastr(error);
-    }
+    await resourcesApi.resetAll();
+    this.restoreAllResource();
   }
 
   render() {
