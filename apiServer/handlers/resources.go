@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 )
 
@@ -34,30 +35,34 @@ func mapArray(resources []*entities.Resource) []*TransportResource {
 
 func (h *Handlers) GetResources(c echo.Context) error {
 	resources := []*entities.Resource{}
-	if err := h.Env.DB.Find(&resources).Error; err != nil {
+	query := h.Env.DB.Order("created_at").Find(&resources)
+	if err := handleQueryError(query, c); err != nil {
 		return err
 	}
 	return c.JSON(http.StatusOK, mapArray(resources))
 }
 
 func (h *Handlers) BookResource(c echo.Context) error {
-	resourceId := c.Param("id")
+	resourceID := c.Param("id")
 
 	tx := h.Env.DB.Begin()
 	resource := &entities.Resource{}
-	if err := tx.Set("gorm:query_option", "FOR UPDATE").First(resource, resourceId).Error; err != nil {
+	query := tx.Set("gorm:query_option", "FOR UPDATE").First(resource, resourceID)
+	if err := handleQueryError(query, c); err != nil {
 		tx.Rollback()
 		return err
 	}
 
 	if !resource.Availability {
+		tx.Rollback()
 		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Resource have already been book",
+			"message": "Resource have already been book",
 		})
 	}
 
 	resource.Availability = false
-	if err := tx.Save(resource).Error; err != nil {
+	query = tx.Save(resource)
+	if err := handleQueryError(query, c); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -68,7 +73,8 @@ func (h *Handlers) BookResource(c echo.Context) error {
 
 func (h *Handlers) RestoreAllResources(c echo.Context) error {
 	tx := h.Env.DB.Begin()
-	if err := tx.Model(entities.Resource{}).Update(entities.Resource{Availability: true}).Error; err != nil {
+	query := tx.Model(entities.Resource{}).Update(entities.Resource{Availability: true})
+	if err := handleQueryError(query, c); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -76,4 +82,14 @@ func (h *Handlers) RestoreAllResources(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]bool{
 		"success": true,
 	})
+}
+
+func handleQueryError(query *gorm.DB, c echo.Context) error {
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return echo.NewHTTPError(http.StatusNotFound, "Resource not found")
+		}
+		return query.Error
+	}
+	return nil
 }
