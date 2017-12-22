@@ -36,10 +36,28 @@ export default class App extends PureComponent {
     }
   }
 
-  wsListen(socket) {
-    socket.on("hello", function(data) {
-      console.log(data);
+  setResourceAsBooked(resourceId) {
+    const newResources = this.state.resources.map(r => {
+      if (r.id === resourceId) {
+        return Object.assign({}, r, { available: false });
+      }
+      return r;
     });
+    this.setState({ resources: newResources });
+  }
+
+  restoreAllResource() {
+    const newResources = this.state.resources.map(r =>
+      Object.assign({}, r, { available: true })
+    );
+    this.setState({ resources: newResources });
+  }
+
+  wsListen(socket) {
+    socket.on("resource_booked", resourceId =>
+      this.setResourceAsBooked(resourceId)
+    );
+    socket.on("restore_all_resources", () => this.restoreAllResource());
   }
 
   async onSelect(resource) {
@@ -49,13 +67,7 @@ export default class App extends PureComponent {
     }
     try {
       await resourcesApi.book(resource.id);
-      const newResources = this.state.resources.map(r => {
-        if (r.id === resource.id) {
-          return Object.assign({}, r, { available: false });
-        }
-        return r;
-      });
-      this.setState({ resources: newResources });
+      this.setResourceAsBooked(resource.id);
     } catch (error) {
       console.log(error);
       toastr(error);
@@ -65,10 +77,7 @@ export default class App extends PureComponent {
   async onRestore() {
     try {
       await resourcesApi.resetAll();
-      const newResources = this.state.resources.map(r =>
-        Object.assign({}, r, { available: true })
-      );
-      this.setState({ resources: newResources });
+      this.restoreAllResource();
     } catch (error) {
       console.log(error);
       toastr(error);

@@ -20,8 +20,18 @@ app.use(cors());
 app.options("*", cors());
 app.use(bodyParser.json());
 
-app.get("/", function(req, res) {
-  res.json({ hello: "world" });
+app.post("/resources/:id/book", function(req, res) {
+  const resourceId = req.params.id;
+  io.sockets.emit("resource_booked", resourceId);
+  res.json({
+    success: true
+  });
+});
+app.post("/resources/restore", function(req, res) {
+  io.sockets.emit("restore_all_resources", true);
+  res.json({
+    success: true
+  });
 });
 
 // Send ws message
