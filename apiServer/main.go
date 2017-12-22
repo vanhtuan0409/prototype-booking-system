@@ -14,7 +14,9 @@ func main() {
 
 	env := app.NewEnv()
 	h := handlers.NewHandlers(env)
-	e.GET("/", h.Echo)
+	e.GET("/resources", h.GetResources)
+	e.POST("/resources/:id/book", h.BookResource)
+	e.POST("/resources/restore", h.RestoreAllResources)
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
