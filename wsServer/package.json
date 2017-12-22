@@ -1,0 +1,33 @@
+{
+  "name": "express-es6",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint src/**",
+    "dev":
+      "NODE_ENV=development nodemon -w src --exec \"node -r dotenv/config -r babel-register src\"",
+    "prebuild": "npm run lint",
+    "build": "babel src -s -D -d dist",
+    "start": "NODE_ENV=production node -r dotenv/config dist"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-eslint": "^7.2.3",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.5.2",
+    "babel-preset-flow": "^6.23.0",
+    "babel-register": "^6.24.1",
+    "eslint": "^4.1.1",
+    "eslint-config-prettier": "^2.2.0",
+    "eslint-plugin-prettier": "^2.1.2",
+    "nodemon": "^1.11.0",
+    "prettier": "^1.5.2"
+  },
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "express": "^4.15.3",
+    "lodash": "^4.17.4"
+  }
+}
