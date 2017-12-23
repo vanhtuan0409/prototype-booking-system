@@ -35,7 +35,6 @@ app.post("/resources/restore", function(req, res) {
   });
 });
 
-const port = process.env.HTTP_PORT || 4000;
-server.listen(port, function() {
-  console.log(`Socket server is running on :${port}`);
+server.listen(4000, function() {
+  console.log(`Socket server is running on :${4000}`);
 });
