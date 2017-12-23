@@ -1,5 +1,8 @@
 FROM node
 
+ARG REACT_APP_API_URL
+ARG REACT_APP_SOCKET_URL
+
 # Create app directory
 WORKDIR /var/booking
 
@@ -15,6 +18,5 @@ RUN yarn global add serve
 COPY . .
 RUN yarn run build
 
-
 EXPOSE 3000
-CMD serve -s build
+CMD serve -s -p 3000 build

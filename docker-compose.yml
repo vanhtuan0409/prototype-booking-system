@@ -20,14 +20,13 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=apiserver
+        - REACT_APP_SOCKET_URL=wsserver  
     image: booking-frontend
     container_name: booking-frontend
-    environment:
-      - REACT_APP_API_URL=apiServer
-      - REACT_APP_SOCKET_URL=wsServer
     links:
       - apiserver
-      - wsserver
     ports:
       - 3000:3000
   
@@ -38,7 +37,7 @@ services:
     image: booking-api
     container_name: booking-api
     environment:
-      - WS_API_URL=wsServer
+      - WS_API_URL=wsserver
       - DB_USER=booking
       - DB_PASSWORD=password
       - DB_HOST=db
