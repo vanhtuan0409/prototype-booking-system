@@ -20,6 +20,5 @@ func initializeDb() (*gorm.DB, error) {
 		host,
 		database,
 	)
-	fmt.Println(connStr)
 	return gorm.Open("postgres", connStr)
 }
