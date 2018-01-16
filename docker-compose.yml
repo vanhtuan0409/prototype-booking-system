@@ -15,24 +15,29 @@ services:
     container_name: booking-adminer
     ports:
       - 5656:8080
+    depends_on:
+      - db
 
   frontend:
+    image: booking-frontend
     build:
       context: frontend
       dockerfile: Dockerfile
       args:
-        - REACT_APP_API_URL=http://188.166.182.27:8080
-        - REACT_APP_SOCKET_URL=http://188.166.182.27:4000
-    image: booking-frontend
+        - REACT_APP_API_URL=http://localhost:8080
+        - REACT_APP_SOCKET_URL=http://localhost:4000
     container_name: booking-frontend
     ports:
       - 3000:3000
+    depends_on:
+      - apiserver
+      - wsserver
   
   apiserver:
+    image: booking-api
     build:
       context: apiServer
       dockerfile: Dockerfile
-    image: booking-api
     container_name: booking-api
     environment:
       - WS_API_URL=http://wsserver:4000
@@ -40,17 +45,17 @@ services:
       - DB_PASSWORD=password
       - DB_HOST=db
       - DB_DATABASE=booking
-    links:
+    depends_on:
       - db
       - wsserver
     ports:
       - 8080:8080
   
   wsserver:
+    image: booking-ws
     build:
       context: wsServer
       dockerfile: Dockerfile
-    image: booking-ws
     container_name: booking-ws
     ports:
       - 4000:4000
