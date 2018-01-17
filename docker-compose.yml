@@ -11,35 +11,24 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik.toml:/var/traefik/traefik.toml
-    networks:
-      - web
-      - internal
     labels:
-      - traefik.backend=traefik
+      - traefik.enable=false
 
   db:
     image: postgres
     container_name: booking-db
-    volumes:
-      - ./containers/postgresql:/var/lib/postgresql
     environment:
       - POSTGRES_USER=booking
       - POSTGRES_PASSWORD=password
-    networks:
-      - internal
     labels:
       - traefik.enable=false
   
   adminer:
     image: adminer
     container_name: booking-adminer
-    networks:
-      - web
-      - internal
     labels:
       - traefik.backend=adminer
       - traefik.frontend.rule=PathPrefix:/db-manager
-      - traefik.docker.network=web
       - traefik.port=8080
     depends_on:
       - db
@@ -53,13 +42,9 @@ services:
         - REACT_APP_API_URL=/api
         - REACT_APP_SOCKET_URL=
     container_name: booking-frontend
-    networks:
-      - web
-      - internal
     labels:
       - traefik.backend=webui
       - traefik.frontend.rule=PathPrefix:/
-      - traefik.docker.network=web
       - traefik.port=3000
     depends_on:
       - apiserver
@@ -80,13 +65,9 @@ services:
     depends_on:
       - db
       - wsserver
-    networks:
-      - web
-      - internal
     labels:
       - traefik.backend=api
       - traefik.frontend.rule=PathPrefixStrip:/api
-      - traefik.docker.network=web
       - traefik.port=8080
   
   wsserver:
@@ -95,15 +76,7 @@ services:
       context: wsServer
       dockerfile: Dockerfile
     container_name: booking-ws
-    networks:
-      - web
-      - internal
     labels:
       - traefik.backend=ws
       - traefik.frontend.rule=PathPrefix:/subscribe
-      - traefik.docker.network=web
       - traefik.port=4000
-
-networks:
-  web:
-  internal:
