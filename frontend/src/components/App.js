@@ -58,12 +58,14 @@ export default class App extends PureComponent {
   }
 
   async onSelect(resource) {
-    if (!resource.available) {
-      toastr.error("Cannot select a booked resource");
+    try {
+      await resourcesApi.book(resource.id);
+      this.setResourceAsBooked(resource.id);
+    } catch (error) {
+      console.log(error);
+      toastr.error("Resource have already been book");
       return;
     }
-    await resourcesApi.book(resource.id);
-    this.setResourceAsBooked(resource.id);
   }
 
   async onRestore() {
