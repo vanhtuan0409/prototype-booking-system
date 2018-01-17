@@ -1,6 +1,22 @@
 version: '3.1'
 
 services:
+  traefik:
+    image: traefik
+    container_name: traefik
+    command: --configFile=/var/traefik/traefik.toml
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.toml:/var/traefik/traefik.toml
+    networks:
+      - web
+      - internal
+    labels:
+      - traefik.backend=traefik
+
   db:
     image: postgres
     container_name: booking-db
@@ -9,12 +25,22 @@ services:
     environment:
       - POSTGRES_USER=booking
       - POSTGRES_PASSWORD=password
+    networks:
+      - internal
+    labels:
+      - traefik.enable=false
   
   adminer:
     image: adminer
     container_name: booking-adminer
-    ports:
-      - 5656:8080
+    networks:
+      - web
+      - internal
+    labels:
+      - traefik.backend=adminer
+      - traefik.frontend.rule=PathPrefix:/db-manager
+      - traefik.docker.network=web
+      - traefik.port=8080
     depends_on:
       - db
 
@@ -24,11 +50,17 @@ services:
       context: frontend
       dockerfile: Dockerfile
       args:
-        - REACT_APP_API_URL=http://localhost:8080
-        - REACT_APP_SOCKET_URL=http://localhost:4000
+        - REACT_APP_API_URL=/api
+        - REACT_APP_SOCKET_URL=
     container_name: booking-frontend
-    ports:
-      - 3000:3000
+    networks:
+      - web
+      - internal
+    labels:
+      - traefik.backend=webui
+      - traefik.frontend.rule=PathPrefix:/
+      - traefik.docker.network=web
+      - traefik.port=3000
     depends_on:
       - apiserver
       - wsserver
@@ -48,8 +80,14 @@ services:
     depends_on:
       - db
       - wsserver
-    ports:
-      - 8080:8080
+    networks:
+      - web
+      - internal
+    labels:
+      - traefik.backend=api
+      - traefik.frontend.rule=PathPrefixStrip:/api
+      - traefik.docker.network=web
+      - traefik.port=8080
   
   wsserver:
     image: booking-ws
@@ -57,5 +95,15 @@ services:
       context: wsServer
       dockerfile: Dockerfile
     container_name: booking-ws
-    ports:
-      - 4000:4000
+    networks:
+      - web
+      - internal
+    labels:
+      - traefik.backend=ws
+      - traefik.frontend.rule=PathPrefix:/subscribe
+      - traefik.docker.network=web
+      - traefik.port=4000
+
+networks:
+  web:
+  internal:
