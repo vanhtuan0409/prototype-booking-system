@@ -20,5 +20,11 @@ func initializeDb() (*gorm.DB, error) {
 		host,
 		database,
 	)
-	return gorm.Open("postgres", connStr)
+	conn, err := gorm.Open("postgres", connStr)
+	if err != nil {
+		return nil, err
+	}
+	conn.DB().SetMaxOpenConns(50)
+
+	return conn, err
 }
