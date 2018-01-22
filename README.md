@@ -2,7 +2,7 @@
 
 This project solely for the purpose of learning docker and handling synchronous problem in ticket booking system
 
-![](http://gph.is/2G2Mu9f)
+![](https://media.giphy.com/media/26gN0Ix4vuv2Ffkl2/giphy.gif)
 
 ### Prerequisite
 
